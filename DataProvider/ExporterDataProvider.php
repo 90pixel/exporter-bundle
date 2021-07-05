@@ -7,10 +7,13 @@ use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use DIA\ExporterBundle\Helper\ExporterHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ExporterDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
 {
@@ -24,16 +27,40 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
      */
     private $collectionExtensions;
 
-    private $exporter;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
+    /**
+     * @var Request|null
+     */
     private $request;
 
-    public function __construct(EntityManagerInterface $entityManager, iterable $collectionExtensions, RequestStack $requestStack)
+    /**
+     * @var ExporterHelper
+     */
+    private $exporter;
+
+    /**
+     * ExporterDataProvider constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param iterable $collectionExtensions
+     * @param SerializerInterface $serializer
+     * @param RequestStack $requestStack
+     */
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        iterable $collectionExtensions,
+        SerializerInterface $serializer,
+        RequestStack $requestStack
+    )
     {
         $this->entityManager = $entityManager;
         $this->collectionExtensions = $collectionExtensions;
-        $this->exporter = new ExporterHelper();
+        $this->serializer = $serializer;
         $this->request = $requestStack->getCurrentRequest();
+        $this->exporter = new ExporterHelper();
     }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
@@ -53,7 +80,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
             }
         }
 
-        $this->exportExcel($queryBuilder->getQuery()->getScalarResult());
+        $this->exportExcel($this->getResult($queryBuilder));
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
@@ -61,10 +88,23 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         return $operationName == 'export';
     }
 
-    private function getExporterClass(string $resourceClass)
+    private function getExporterClass(string $resourceClass): string
     {
         $resourceClass = str_replace('Entity', 'Exporter', $resourceClass);
         return $resourceClass . 'Exporter';
+    }
+
+    private function getResult(QueryBuilder $queryBuilder)
+    {
+        $results = $this->exporter->getResult($queryBuilder);
+        if ($this->exporter->normalize) {
+            $settings = $this->exporter->supportNormalization();
+            $format = $settings['format'] ?? null;
+            $context = $settings['context'] ?? [];
+            $results = $this->serializer->normalize($results, $format, $context);
+        }
+
+        return $results;
     }
 
     private function exportExcel($data)
@@ -72,21 +112,17 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        foreach ($this->exporter->headers as $key => $header) {
-            $sheet->setCellValue($key, $header);
-        }
-
-        $rows = [];
+        $rows[] = $this->exporter->headers;
         foreach ($data as $row) {
             $rows[] = $this->exporter->row($row);
         }
 
-        $sheet->fromArray(array_values($rows), null, 'A2', true);
+        $sheet->fromArray(array_values($rows), null, 'A1', true);
         $writer = new Xlsx($spreadsheet);
 
         $response = new Response();
         $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s"', 'corpeo-export.xlsx'));
+        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s"', 'dia-export.xlsx'));
         $response->headers->set('Cache-Control', 'max-age=0');
         $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->prepare($this->request);
