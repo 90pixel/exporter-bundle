@@ -1,0 +1,22 @@
+{
+    "name": "dia/exporter-bundle",
+    "description": "Exporter Bundle",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Muhep Atasoy",
+            "email": "muhepatasoy06@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "symfony/framework-bundle": "^5.0",
+        "api-platform/api-pack": "^1.2",
+        "phpoffice/phpspreadsheet": "^1.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "DIA\\ExporterBundle\\": ""
+        }
+    }
+}
