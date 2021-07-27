@@ -89,7 +89,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $config = ConfigReader::read($resourceClass, $operationName);
         if (!$config) return false;
 
-        return $config->useExtension === false && $config->operationName === $operationName;
+        return $config->operationName === $operationName;
     }
 
     private function getExporterClass(string $resourceClass): string
