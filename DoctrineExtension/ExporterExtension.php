@@ -1,13 +1,14 @@
 <?php
 
-namespace DIA\ExporterBundle\DataProvider;
+namespace DIA\ExporterBundle\DoctrineExtension;
 
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\FilterExtension;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
-use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
-use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use App\Entity\ArticleOffer;
 use DIA\ExporterBundle\Helper\ExporterHelper;
 use DIA\ExporterBundle\Reader\ConfigReader;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -16,13 +17,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ExporterDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
+class ExporterExtension implements QueryCollectionExtensionInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
     /**
      * @var iterable
      */
@@ -43,53 +39,47 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
      */
     private $exporter;
 
-    /**
-     * ExporterDataProvider constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param iterable $collectionExtensions
-     * @param SerializerInterface $serializer
-     * @param RequestStack $requestStack
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
         iterable $collectionExtensions,
         SerializerInterface $serializer,
         RequestStack $requestStack
     )
     {
-        $this->entityManager = $entityManager;
         $this->collectionExtensions = $collectionExtensions;
         $this->serializer = $serializer;
         $this->request = $requestStack->getCurrentRequest();
         $this->exporter = new ExporterHelper();
     }
 
-    public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null)
     {
-        $queryBuilder = $this->entityManager->getRepository($resourceClass)->createQueryBuilder('o');
+        if (!$this->supports($resourceClass, $operationName)) {
+            return;
+        }
 
+        $alias = $queryBuilder->getRootAliases()[0];
         $exporterClass = $this->getExporterClass($resourceClass);
         if (class_exists($exporterClass)) {
             $this->exporter = new $exporterClass();
-            $this->exporter->builder($queryBuilder, 'o');
+            $this->exporter->builder($queryBuilder, $alias);
         }
 
         $queryNameGenerator = new QueryNameGenerator();
         foreach ($this->collectionExtensions as $extension) {
-            if (in_array(get_class($extension), $this->exporter->filters())) {
-                $extension->applyToCollection($queryBuilder, $queryNameGenerator, $resourceClass, $operationName, $context);
+            if (in_array(get_class($extension), [ FilterExtension::class ])) {
+                $extension->applyToCollection($queryBuilder, $queryNameGenerator, $resourceClass, $operationName);
             }
         }
 
         $this->exportExcel($this->getResult($queryBuilder));
     }
 
-    public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
+    public function supports(string $resourceClass, string $operationName): bool
     {
         $config = ConfigReader::read($resourceClass, $operationName);
         if (!$config) return false;
 
-        return $config->useExtension === false && $config->operationName === $operationName;
+        return $config->useExtension === true && $config->operationName === $operationName;
     }
 
     private function getExporterClass(string $resourceClass): string

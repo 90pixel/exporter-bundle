@@ -11,3 +11,7 @@ services:
   DIA\ExporterBundle\DataProvider\ExporterDataProvider:
     arguments:
       $collectionExtensions: !tagged api_platform.doctrine.orm.query_extension.collection
+
+  DIA\ExporterBundle\DoctrineExtension\ExporterExtension:
+    arguments:
+      $collectionExtensions: !tagged api_platform.doctrine.orm.query_extension.collection
