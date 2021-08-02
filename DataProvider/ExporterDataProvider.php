@@ -122,6 +122,20 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         }
 
         $sheet->fromArray(array_values($rows), null, 'A1', true);
+
+        // Auto width
+        $cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(true);
+        foreach ($cellIterator as $cell) {
+            $sheet->getCell($cell->getColumn() . '1')->getStyle()->getFont()->setBold(true);
+
+            $sheet->getColumnDimension($cell->getColumn())->setAutoSize(true);
+        }
+
+        // Filter
+        $sheet->setAutoFilter($spreadsheet->getActiveSheet()
+            ->calculateWorksheetDimension());
+
         $writer = new Xlsx($spreadsheet);
 
         $response = new Response();
