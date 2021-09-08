@@ -6,6 +6,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
 use DIA\ExporterBundle\Helper\ExporterHelper;
+use DIA\ExporterBundle\Interfaces\ExporterInterface;
 use DIA\ExporterBundle\Reader\ConfigReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -68,11 +69,8 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
     {
         $queryBuilder = $this->entityManager->getRepository($resourceClass)->createQueryBuilder('o');
 
-        $exporterClass = $this->getExporterClass($resourceClass);
-        if (class_exists($exporterClass)) {
-            $this->exporter = new $exporterClass();
-            $this->exporter->builder($queryBuilder, 'o');
-        }
+        $this->exporter = $this->getExporterClass($resourceClass, $operationName);
+        $this->exporter->builder($queryBuilder, 'o');
 
         $queryNameGenerator = new QueryNameGenerator();
         foreach ($this->collectionExtensions as $extension) {
@@ -81,7 +79,8 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
             }
         }
 
-        $this->exportExcel($this->getResult($queryBuilder));
+        $result = $this->getResult($queryBuilder);
+        $this->exportExcel($result, $this->exporter->getFileName());
     }
 
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
@@ -92,10 +91,23 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         return $config->operationName === $operationName;
     }
 
-    private function getExporterClass(string $resourceClass): string
+    /**
+     * @param string $resourceClass
+     * @param string $operationName
+     * @return ExporterInterface
+     */
+    private function getExporterClass(string $resourceClass, string $operationName): ExporterInterface
     {
-        $resourceClass = str_replace('Entity', 'Exporter', $resourceClass);
-        return $resourceClass . 'Exporter';
+        $config = ConfigReader::read($resourceClass, $operationName);
+
+        $exporterClass = new ExporterHelper();
+        if ($config->exporterClass) {
+            $exporterClass = new $config->exporterClass();
+        }
+
+        $exporterClass->setConfig($config);
+
+        return $exporterClass;
     }
 
     private function getResult(QueryBuilder $queryBuilder)
@@ -111,7 +123,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         return $results;
     }
 
-    private function exportExcel($data)
+    private function exportExcel($data, string $filename)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -140,7 +152,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
 
         $response = new Response();
         $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s"', 'dia-export.xlsx'));
+        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s"', $filename));
         $response->headers->set('Cache-Control', 'max-age=0');
         $response->headers->set('Access-Control-Allow-Origin', '*');
         $response->prepare($this->request);

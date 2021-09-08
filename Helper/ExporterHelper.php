@@ -3,6 +3,7 @@
 namespace DIA\ExporterBundle\Helper;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\FilterExtension;
+use DIA\ExporterBundle\Annotation\ExporterConfig;
 use DIA\ExporterBundle\Interfaces\ExporterInterface;
 use Doctrine\ORM\QueryBuilder;
 
@@ -11,6 +12,11 @@ class ExporterHelper implements ExporterInterface
     public $headers = [];
 
     public $normalize = true;
+
+    /**
+     * @var ExporterConfig
+     */
+    private $config;
 
     /**
      * @param QueryBuilder $queryBuilder
@@ -54,5 +60,18 @@ class ExporterHelper implements ExporterInterface
         return [
             FilterExtension::class
         ];
+    }
+
+    public function getFileName(): string
+    {
+        return $this->config->filename ?? 'export.xlsx';
+    }
+
+    /**
+     * @param ExporterConfig $config
+     */
+    public function setConfig(ExporterConfig $config): void
+    {
+        $this->config = $config;
     }
 }

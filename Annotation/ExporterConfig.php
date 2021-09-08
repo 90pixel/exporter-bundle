@@ -2,16 +2,24 @@
 
 namespace DIA\ExporterBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Attribute;
-
 /**
  * @Annotation
  * @Target({"CLASS"})
- * @Attributes(
- *     @Attribute("operationName", type="string"),
- * )
  */
 final class ExporterConfig
 {
+    /**
+     * @var string
+     */
     public $operationName;
+
+    /**
+     * @var string
+     */
+    public $exporterClass;
+
+    /**
+     * @var string
+     */
+    public $filename;
 }
