@@ -22,4 +22,14 @@ final class ExporterConfig
      * @var string
      */
     public $filename;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    public function __construct()
+    {
+        $this->type = $this->type ?? 'excel';
+    }
 }

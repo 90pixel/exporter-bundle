@@ -88,7 +88,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $config = ConfigReader::read($resourceClass, $operationName);
         if (!$config) return false;
 
-        return $config->operationName === $operationName;
+        return $config->operationName === $operationName && $config->type === 'excel';
     }
 
     /**
