@@ -9,13 +9,14 @@ use DIA\ExporterBundle\Helper\ExporterHelper;
 use DIA\ExporterBundle\Interfaces\ExporterInterface;
 use DIA\ExporterBundle\Reader\ConfigReader;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
+use Mpdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\SerializerInterface;
+use Twig\Environment;
 
 class ExporterDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
 {
@@ -30,11 +31,6 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
     private $collectionExtensions;
 
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @var Request|null
      */
     private $request;
@@ -45,32 +41,44 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
     private $exporter;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
      * ExporterDataProvider constructor.
      * @param EntityManagerInterface $entityManager
      * @param iterable $collectionExtensions
-     * @param SerializerInterface $serializer
      * @param RequestStack $requestStack
+     * @param Environment $twig
+     * @param ContainerInterface $container
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         iterable $collectionExtensions,
-        SerializerInterface $serializer,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        Environment $twig,
+        ContainerInterface $container
     )
     {
         $this->entityManager = $entityManager;
         $this->collectionExtensions = $collectionExtensions;
-        $this->serializer = $serializer;
         $this->request = $requestStack->getCurrentRequest();
-        $this->exporter = new ExporterHelper();
+        $this->twig = $twig;
+        $this->container = $container;
     }
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
     {
+        $config = ConfigReader::read($resourceClass, $operationName);
         $queryBuilder = $this->entityManager->getRepository($resourceClass)->createQueryBuilder('o');
 
         $this->exporter = $this->getExporterClass($resourceClass, $operationName);
-        $this->exporter->builder($queryBuilder, 'o');
 
         $queryNameGenerator = new QueryNameGenerator();
         foreach ($this->collectionExtensions as $extension) {
@@ -79,16 +87,28 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
             }
         }
 
-        $result = $this->getResult($queryBuilder);
+        $this->exporter->builder($queryBuilder, 'o');
+        $result = $this->exporter->getResult($queryBuilder);
+
+        if ($config->type === 'pdf' && $config->templateName) {
+            $this->exportPdf($result, $config->templateName, $this->exporter->getFileName());
+        }
+
         $this->exportExcel($result, $this->exporter->getFileName());
     }
 
+    /**
+     * @param string $resourceClass
+     * @param string|null $operationName
+     * @param array $context
+     * @return bool
+     */
     public function supports(string $resourceClass, string $operationName = null, array $context = []): bool
     {
         $config = ConfigReader::read($resourceClass, $operationName);
         if (!$config) return false;
 
-        return $config->operationName === $operationName && $config->type === 'excel';
+        return $config->operationName === $operationName;
     }
 
     /**
@@ -100,9 +120,9 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
     {
         $config = ConfigReader::read($resourceClass, $operationName);
 
-        $exporterClass = new ExporterHelper();
+        $exporterClass = $this->container->get(ExporterHelper::class);
         if ($config->exporterClass) {
-            $exporterClass = new $config->exporterClass();
+            $exporterClass = $this->container->get($config->exporterClass);
         }
 
         $exporterClass->setConfig($config);
@@ -110,18 +130,6 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         return $exporterClass;
     }
 
-    private function getResult(QueryBuilder $queryBuilder)
-    {
-        $results = $this->exporter->getResult($queryBuilder);
-        if ($this->exporter->normalize) {
-            $settings = $this->exporter->supportNormalization();
-            $format = $settings['format'] ?? null;
-            $context = $settings['context'] ?? [];
-            $results = $this->serializer->normalize($results, $format, $context);
-        }
-
-        return $results;
-    }
 
     private function exportExcel($data, string $filename)
     {
@@ -158,6 +166,23 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $response->prepare($this->request);
         $response->sendHeaders();
         $writer->save('php://output');
+        exit();
+    }
+
+    private function exportPdf($data, string $templateName, string $filename)
+    {
+        $rows = [];
+        foreach ($data as $row) {
+            $rows[] = $this->exporter->row($row);
+        }
+
+        $htmlOutput = $this->twig->render($templateName, [
+            'headers' => $this->exporter->headers,
+            'results' => $rows
+        ]);
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($htmlOutput);
+        $mpdf->Output();
         exit();
     }
 }

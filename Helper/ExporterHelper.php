@@ -11,8 +11,6 @@ class ExporterHelper implements ExporterInterface
 {
     public $headers = [];
 
-    public $normalize = true;
-
     /**
      * @var ExporterConfig
      */
@@ -30,17 +28,6 @@ class ExporterHelper implements ExporterInterface
     public function getResult(QueryBuilder $queryBuilder): array
     {
         return $queryBuilder->getQuery()->getResult();
-    }
-
-    /**
-     * @return array
-     */
-    public function supportNormalization(): array
-    {
-        return [
-            'format' => null,
-            'context' => []
-        ];
     }
 
     /**

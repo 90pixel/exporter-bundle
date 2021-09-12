@@ -28,6 +28,11 @@ final class ExporterConfig
      */
     public $type;
 
+    /**
+     * @var string
+     */
+    public $templateName;
+
     public function __construct()
     {
         $this->type = $this->type ?? 'excel';
