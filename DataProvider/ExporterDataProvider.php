@@ -5,6 +5,7 @@ namespace DIA\ExporterBundle\DataProvider;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
+use DIA\ExporterBundle\Helper\DriverHelper;
 use DIA\ExporterBundle\Helper\ExporterHelper;
 use DIA\ExporterBundle\Interfaces\ExporterInterface;
 use DIA\ExporterBundle\Reader\ConfigReader;
@@ -75,7 +76,6 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
 
     public function getCollection(string $resourceClass, string $operationName = null, array $context = [])
     {
-        $config = ConfigReader::read($resourceClass, $operationName);
         $queryBuilder = $this->entityManager->getRepository($resourceClass)->createQueryBuilder('o');
 
         $this->exporter = $this->getExporterClass($resourceClass, $operationName);
@@ -88,13 +88,14 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         }
 
         $this->exporter->builder($queryBuilder, 'o');
-        $result = $this->exporter->getResult($queryBuilder);
+        $results = $this->exporter->getResult($queryBuilder);
 
-        if ($config->type === 'pdf' && $config->templateName) {
-            $this->exportPdf($result, $config->templateName, $this->exporter->getFileName());
+        $rows = [];
+        foreach ($results as $row) {
+            $rows[] = $this->exporter->row($row);
         }
 
-        $this->exportExcel($result, $this->exporter->getFileName());
+        return $rows;
     }
 
     /**
@@ -131,7 +132,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
     }
 
 
-    private function exportExcel($data, string $filename)
+    /*private function exportExcel($data, string $filename)
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -167,7 +168,7 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $response->sendHeaders();
         $writer->save('php://output');
         exit();
-    }
+    }*/
 
     private function exportPdf($data, string $templateName, string $filename)
     {
