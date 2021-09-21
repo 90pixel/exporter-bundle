@@ -2,6 +2,7 @@
 
 namespace DIA\ExporterBundle\Controller;
 
+use DIA\ExporterBundle\Driver\PdfDriver;
 use DIA\ExporterBundle\Driver\XlsxDriver;
 use DIA\ExporterBundle\Manager\ExporterManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,12 @@ class ExporterController extends AbstractController
      */
     public function __invoke($data, ExporterManager $exporterManager): Response
     {
-        return $exporterManager->getDriver(XlsxDriver::class)->handle($data);
+        // TODO: Custom driver support will be added soon
+        $driverClass = XlsxDriver::class;
+        if ($exporterManager->getConfig()->type === 'pdf') {
+            $driverClass = PdfDriver::class;
+        }
+
+        return $exporterManager->getDriver($driverClass)->handle($data);
     }
 }
