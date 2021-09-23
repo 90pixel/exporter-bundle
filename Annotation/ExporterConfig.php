@@ -1,6 +1,6 @@
 <?php
 
-namespace DIA\ExporterBundle\Annotation;
+namespace DPX\ExporterBundle\Annotation;
 
 /**
  * @Annotation

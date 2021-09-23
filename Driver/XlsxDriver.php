@@ -1,8 +1,8 @@
 <?php
 
-namespace DIA\ExporterBundle\Driver;
+namespace DPX\ExporterBundle\Driver;
 
-use DIA\ExporterBundle\Helper\DriverHelper;
+use DPX\ExporterBundle\Helper\DriverHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\Response;

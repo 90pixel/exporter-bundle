@@ -4,16 +4,16 @@ services:
     autoconfigure: true
     public: true
 
-  DIA\ExporterBundle\:
+  DPX\ExporterBundle\:
     resource: '../../*'
     exclude: '../{DependencyInjection,Entity,Migrations,Tests}'
 
-  DIA\ExporterBundle\DataProvider\ExporterDataProvider:
+  DPX\ExporterBundle\DataProvider\ExporterDataProvider:
     arguments:
       $collectionExtensions: !tagged api_platform.doctrine.orm.query_extension.collection
 
   dpx.exporter.exporter_controller:
-    class: DIA\ExporterBundle\Controller\ExporterController
+    class: DPX\ExporterBundle\Controller\ExporterController
 
   dpx.exporter.driver.xlsx:
-    class: DIA\ExporterBundle\Driver\XlsxDriver
+    class: DPX\ExporterBundle\Driver\XlsxDriver

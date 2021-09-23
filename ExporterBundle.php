@@ -1,6 +1,6 @@
 <?php
 
-namespace DIA\ExporterBundle;
+namespace DPX\ExporterBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

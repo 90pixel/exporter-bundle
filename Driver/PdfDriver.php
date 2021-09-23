@@ -1,9 +1,9 @@
 <?php
 
-namespace DIA\ExporterBundle\Driver;
+namespace DPX\ExporterBundle\Driver;
 
-use DIA\ExporterBundle\Helper\DriverHelper;
-use DIA\ExporterBundle\Manager\ExporterManager;
+use DPX\ExporterBundle\Helper\DriverHelper;
+use DPX\ExporterBundle\Manager\ExporterManager;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;

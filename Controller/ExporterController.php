@@ -1,16 +1,16 @@
 <?php
 
-namespace DIA\ExporterBundle\Controller;
+namespace DPX\ExporterBundle\Controller;
 
-use DIA\ExporterBundle\Driver\PdfDriver;
-use DIA\ExporterBundle\Driver\XlsxDriver;
-use DIA\ExporterBundle\Manager\ExporterManager;
+use DPX\ExporterBundle\Driver\PdfDriver;
+use DPX\ExporterBundle\Driver\XlsxDriver;
+use DPX\ExporterBundle\Manager\ExporterManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ExporterController
- * @package DIA\Controller\ExporterController
+ * @package DPX\Controller\ExporterController
  */
 class ExporterController extends AbstractController
 {

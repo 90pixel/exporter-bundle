@@ -1,8 +1,8 @@
 <?php
 
-namespace DIA\ExporterBundle\Reader;
+namespace DPX\ExporterBundle\Reader;
 
-use DIA\ExporterBundle\Annotation\ExporterConfig;
+use DPX\ExporterBundle\Annotation\ExporterConfig;
 use Doctrine\Common\Annotations\AnnotationReader;
 use ReflectionClass;
 

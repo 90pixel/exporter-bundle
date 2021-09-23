@@ -1,9 +1,9 @@
 <?php
 
-namespace DIA\ExporterBundle\Helper;
+namespace DPX\ExporterBundle\Helper;
 
-use DIA\ExporterBundle\Interfaces\DriverInterface;
-use DIA\ExporterBundle\Manager\ExporterManager;
+use DPX\ExporterBundle\Interfaces\DriverInterface;
+use DPX\ExporterBundle\Manager\ExporterManager;
 use Symfony\Component\HttpFoundation\Response;
 
 class DriverHelper implements DriverInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace DIA\ExporterBundle\Interfaces;
+namespace DPX\ExporterBundle\Interfaces;
 
 use Symfony\Component\HttpFoundation\Response;
 

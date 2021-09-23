@@ -1,14 +1,14 @@
 <?php
 
-namespace DIA\ExporterBundle\DataProvider;
+namespace DPX\ExporterBundle\DataProvider;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
 use ApiPlatform\Core\DataProvider\ContextAwareCollectionDataProviderInterface;
 use ApiPlatform\Core\DataProvider\RestrictedDataProviderInterface;
-use DIA\ExporterBundle\Helper\DriverHelper;
-use DIA\ExporterBundle\Helper\ExporterHelper;
-use DIA\ExporterBundle\Interfaces\ExporterInterface;
-use DIA\ExporterBundle\Reader\ConfigReader;
+use DPX\ExporterBundle\Helper\DriverHelper;
+use DPX\ExporterBundle\Helper\ExporterHelper;
+use DPX\ExporterBundle\Interfaces\ExporterInterface;
+use DPX\ExporterBundle\Reader\ConfigReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Mpdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;

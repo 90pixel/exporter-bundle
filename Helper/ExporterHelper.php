@@ -1,10 +1,10 @@
 <?php
 
-namespace DIA\ExporterBundle\Helper;
+namespace DPX\ExporterBundle\Helper;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\FilterExtension;
-use DIA\ExporterBundle\Annotation\ExporterConfig;
-use DIA\ExporterBundle\Interfaces\ExporterInterface;
+use DPX\ExporterBundle\Annotation\ExporterConfig;
+use DPX\ExporterBundle\Interfaces\ExporterInterface;
 use Doctrine\ORM\QueryBuilder;
 
 class ExporterHelper implements ExporterInterface

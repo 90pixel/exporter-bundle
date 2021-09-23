@@ -1,12 +1,12 @@
 <?php
 
-namespace DIA\ExporterBundle\Manager;
+namespace DPX\ExporterBundle\Manager;
 
-use DIA\ExporterBundle\Annotation\ExporterConfig;
-use DIA\ExporterBundle\Helper\ExporterHelper;
-use DIA\ExporterBundle\Interfaces\DriverInterface;
-use DIA\ExporterBundle\Interfaces\ExporterInterface;
-use DIA\ExporterBundle\Reader\ConfigReader;
+use DPX\ExporterBundle\Annotation\ExporterConfig;
+use DPX\ExporterBundle\Helper\ExporterHelper;
+use DPX\ExporterBundle\Interfaces\DriverInterface;
+use DPX\ExporterBundle\Interfaces\ExporterInterface;
+use DPX\ExporterBundle\Reader\ConfigReader;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;

@@ -1,6 +1,6 @@
 <?php
 
-namespace DIA\ExporterBundle\DependencyInjection;
+namespace DPX\ExporterBundle\DependencyInjection;
 
 use Exception;
 use Symfony\Component\Config\FileLocator;

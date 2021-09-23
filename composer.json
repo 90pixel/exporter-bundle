@@ -1,5 +1,5 @@
 {
-    "name": "dia/exporter-bundle",
+    "name": "dpx/exporter-bundle",
     "description": "Exporter Bundle",
     "type": "library",
     "authors": [
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "DIA\\ExporterBundle\\": ""
+            "DPX\\ExporterBundle\\": ""
         }
     }
 }
