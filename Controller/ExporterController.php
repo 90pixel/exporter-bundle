@@ -21,12 +21,6 @@ class ExporterController extends AbstractController
      */
     public function __invoke($data, ExporterManager $exporterManager): Response
     {
-        // TODO: Custom driver support will be added soon
-        $driverClass = XlsxDriver::class;
-        if ($exporterManager->getConfig()->type === 'pdf') {
-            $driverClass = PdfDriver::class;
-        }
-
-        return $exporterManager->getDriver($driverClass)->handle($data);
+        return $exporterManager->getDriver()->handle($data);
     }
 }

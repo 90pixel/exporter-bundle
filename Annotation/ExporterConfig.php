@@ -26,15 +26,15 @@ final class ExporterConfig
     /**
      * @var string
      */
-    public $type;
+    public $templateName;
 
     /**
      * @var string
      */
-    public $templateName;
+    public $driver;
 
     public function __construct()
     {
-        $this->type = $this->type ?? 'excel';
+        $this->driver = $this->driver ?? 'dpx.exporter.driver.xlsx';
     }
 }

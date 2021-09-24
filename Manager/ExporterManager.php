@@ -23,32 +23,51 @@ class ExporterManager
      */
     private $request;
 
+    /**
+     * @param ContainerInterface $container
+     * @param RequestStack $request
+     */
     public function __construct(ContainerInterface $container, RequestStack $request)
     {
         $this->container = $container;
         $this->request = $request->getCurrentRequest();
     }
 
+    /**
+     * @return Request
+     */
     public function getRequest(): Request
     {
         return $this->request;
     }
 
+    /**
+     * @return string
+     */
     public function getResourceClass(): string
     {
         return $this->getRequest()->attributes->get('_api_resource_class');
     }
 
+    /**
+     * @return string
+     */
     public function getOperationName(): string
     {
         return $this->getRequest()->attributes->get('_api_collection_operation_name');
     }
 
+    /**
+     * @return ExporterConfig|null
+     */
     public function getConfig(): ?ExporterConfig
     {
         return ConfigReader::read($this->getResourceClass(), $this->getOperationName());
     }
 
+    /**
+     * @return ExporterInterface
+     */
     public function getExporter(): ExporterInterface
     {
         $exporterClass = $this->container->get(ExporterHelper::class);
@@ -61,8 +80,16 @@ class ExporterManager
         return $exporterClass;
     }
 
-    public function getDriver(string $driver): DriverInterface
+    /**
+     * @param string|null $driver
+     * @return DriverInterface
+     */
+    public function getDriver(string $driver = null): DriverInterface
     {
+        if (!$driver) {
+            $driver = $this->getConfig()->driver;
+        }
+
         return $this->container->get($driver);
     }
 }

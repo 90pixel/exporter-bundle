@@ -17,3 +17,6 @@ services:
 
   dpx.exporter.driver.xlsx:
     class: DPX\ExporterBundle\Driver\XlsxDriver
+
+  dpx.exporter.driver.pdf:
+    class: DPX\ExporterBundle\Driver\PdfDriver
