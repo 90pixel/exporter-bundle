@@ -2,6 +2,8 @@
 
 namespace DPX\ExporterBundle\Annotation;
 
+use DPX\ExporterBundle\Constant\DriverConstant;
+
 /**
  * @Annotation
  * @Target({"CLASS"})
@@ -35,6 +37,6 @@ final class ExporterConfig
 
     public function __construct()
     {
-        $this->driver = $this->driver ?? 'dpx.exporter.driver.xlsx';
+        $this->driver = $this->driver ?? DriverConstant::XLSX;
     }
 }
