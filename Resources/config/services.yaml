@@ -12,6 +12,10 @@ services:
     arguments:
       $collectionExtensions: !tagged api_platform.doctrine.orm.query_extension.collection
 
+  DPX\ExporterBundle\EventListener\KernelViewListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.view, method: onKernelView, priority: 17 }
+
   dpx.exporter.exporter_controller:
     class: DPX\ExporterBundle\Controller\ExporterController
 

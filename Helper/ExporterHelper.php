@@ -31,15 +31,6 @@ class ExporterHelper implements ExporterInterface
     }
 
     /**
-     * @param mixed $data
-     * @return array
-     */
-    public function row($data): array
-    {
-        return $data;
-    }
-
-    /**
      * @return string[]
      */
     public function filters(): array
@@ -51,7 +42,7 @@ class ExporterHelper implements ExporterInterface
 
     public function getFileName(): string
     {
-        return $this->config->filename ?? 'export.xlsx';
+        return $this->config->filename;
     }
 
     /**
