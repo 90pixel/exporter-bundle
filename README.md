@@ -2,7 +2,6 @@
 
 ## Description
 You can easily export your data to pdf or excel format.
-#### API platform is required for export operation. I'm considering add standalone support in the future.
 
 ## Installation
 ```bash
