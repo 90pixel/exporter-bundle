@@ -17,7 +17,11 @@ class XlsxDriver extends DriverHelper
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        array_unshift($data, $exporter->headers);
+        $exporter->headers = [ 'a', 'n', 'v', 'd' ];
+
+        if (count($exporter->headers)) {
+            array_unshift($data, $exporter->headers);
+        }
 
         $sheet->fromArray(array_values($data), null, 'A1', true);
 
@@ -30,9 +34,11 @@ class XlsxDriver extends DriverHelper
             $sheet->getColumnDimension($cell->getColumn())->setAutoSize(true);
         }
 
-        // Filter
-        $sheet->setAutoFilter($spreadsheet->getActiveSheet()
-            ->calculateWorksheetDimension());
+        if (count($exporter->headers)) {
+            // Filter
+            $sheet->setAutoFilter($spreadsheet->getActiveSheet()
+                ->calculateWorksheetDimension());
+        }
 
         $writer = new Xlsx($spreadsheet);
 
