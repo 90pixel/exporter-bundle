@@ -17,8 +17,6 @@ class XlsxDriver extends DriverHelper
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $exporter->headers = [ 'a', 'n', 'v', 'd' ];
-
         if (count($exporter->headers)) {
             array_unshift($data, $exporter->headers);
         }
