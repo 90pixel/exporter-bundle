@@ -39,5 +39,6 @@ final class ExporterConfig
     {
         $this->driver = $this->driver ?? DriverConstant::XLSX;
         $this->filename = $this->driver === DriverConstant::XLSX ? 'export.xlsx' : 'export.pdf';
+        $this->templateName = '@Exporter/pdf/default.html.twig';
     }
 }
