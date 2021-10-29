@@ -27,7 +27,9 @@ class XlsxDriver extends DriverHelper
         $cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
         foreach ($cellIterator as $cell) {
-            $sheet->getCell($cell->getColumn() . '1')->getStyle()->getFont()->setBold(true);
+            if (count($exporter->headers)) {
+                $sheet->getCell($cell->getColumn() . '1')->getStyle()->getFont()->setBold(true);
+            }
 
             $sheet->getColumnDimension($cell->getColumn())->setAutoSize(true);
         }
