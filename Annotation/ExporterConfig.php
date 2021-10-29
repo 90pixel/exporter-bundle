@@ -38,5 +38,6 @@ final class ExporterConfig
     public function __construct()
     {
         $this->driver = $this->driver ?? DriverConstant::XLSX;
+        $this->filename = $this->driver === DriverConstant::XLSX ? 'export.xlsx' : 'export.pdf';
     }
 }
