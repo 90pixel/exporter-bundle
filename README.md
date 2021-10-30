@@ -237,7 +237,7 @@ The custom driver should look like this.
 ```php
 <?php
 
-namespace DPX\ExporterBundle\Driver;
+namespace App\Driver;
 
 use DPX\ExporterBundle\Helper\DriverHelper;
 use Symfony\Component\HttpFoundation\Response;
