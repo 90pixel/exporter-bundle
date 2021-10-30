@@ -19,6 +19,7 @@ Documentation
     * [Access Query Builder](#access-query-builder)
     * [Manage Filters (Extensions)](#manage-filters-extensions)
   * [Custom Driver](#custom-driver)
+  * [Normalizer](#normalizer)
 
 Getting started
 ===============
@@ -247,6 +248,53 @@ class JpgDriver extends DriverHelper
     public function handle($data): Response
     {
         // The magic must happen here.
+    }
+}
+```
+
+Normalizer
+---------
+```php
+<?php
+// src/Serializer/Normalizer/ProductNormalizer.php
+
+namespace App\Serializer\Normalizer;
+
+use App\Entity\Product;
+use NumberFormatter;
+use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
+class ProductNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+{
+    private $normalizer;
+
+    public function __construct(ObjectNormalizer $normalizer)
+    {
+        $this->normalizer = $normalizer;
+    }
+
+    public function normalize($object, $format = null, array $context = []): array
+    {
+        $data = $this->normalizer->normalize($object, $format, $context);
+        
+        $formatter = new NumberFormatter('en_GB',  NumberFormatter::CURRENCY);
+        $price = $formatter->formatCurrency($object->getPrice(), 'EUR');
+
+        $data['price'] = $price;
+
+        return $data;
+    }
+
+    public function supportsNormalization($data, $format = null): bool
+    {
+        return $data instanceof Product;
+    }
+
+    public function hasCacheableSupportsMethod(): bool
+    {
+        return true;
     }
 }
 ```
