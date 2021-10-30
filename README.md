@@ -136,7 +136,7 @@ Generate exporter class.
 
 namespace App\Exporter;
 
-class ArticleOfferExporter extends ExporterHelper
+class ProductExporter extends ExporterHelper
 {
 }
 ```
@@ -148,7 +148,7 @@ class ArticleOfferExporter extends ExporterHelper
 
 namespace App\Exporter;
 
-class ArticleOfferExporter extends ExporterHelper
+class ProductExporter extends ExporterHelper
 {
     /**
      * @return string
@@ -167,7 +167,7 @@ class ArticleOfferExporter extends ExporterHelper
 
 namespace App\Exporter;
 
-class ArticleOfferExporter extends ExporterHelper
+class ProductExporter extends ExporterHelper
 {
     public $headers = [
         'ID',
@@ -185,7 +185,7 @@ class ArticleOfferExporter extends ExporterHelper
 
 namespace App\Exporter;
 
-class ArticleOfferExporter extends ExporterHelper
+class ProductExporter extends ExporterHelper
 {
     // ...
     
@@ -211,7 +211,7 @@ You can easily define which extensions will be enabled.
 
 namespace App\Exporter;
 
-class ArticleOfferExporter extends ExporterHelper
+class ProductExporter extends ExporterHelper
 {
     // ...
     
