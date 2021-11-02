@@ -9,6 +9,9 @@ use Doctrine\ORM\QueryBuilder;
 
 class ExporterHelper implements ExporterInterface
 {
+    /**
+     * @var array
+     */
     public $headers = [];
 
     /**
@@ -25,6 +28,10 @@ class ExporterHelper implements ExporterInterface
         // TODO: Implement builder() method.
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return array
+     */
     public function getResult(QueryBuilder $queryBuilder): array
     {
         return $queryBuilder->getQuery()->getResult();
@@ -40,9 +47,24 @@ class ExporterHelper implements ExporterInterface
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getFileName(): string
     {
         return $this->config->filename;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        if (!count($this->headers)) {
+            $this->headers = $this->config->headers;
+        }
+
+        return $this->headers;
     }
 
     /**

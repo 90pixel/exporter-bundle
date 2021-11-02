@@ -67,7 +67,8 @@ then register your custom operation.
 /**
  * ...
  * @ExporterConfig(
- *     operationName="export"
+ *     operationName="export",
+ *     headers={"ID", "Product", "Barcode", "Price"},
  * )
  * ...
  */
@@ -80,6 +81,7 @@ then register your custom operation.
  * @ExporterConfig(
  *     operationName="export",
  *     driver="dpx.exporter.driver.pdf",
+ *     headers={"ID", "Product", "Barcode", "Price"},
  * )
  * ...
  */
@@ -176,6 +178,44 @@ class ProductExporter extends ExporterHelper
         'Barcode',
         'Price',
     ];
+}
+```
+
+or
+
+```php
+<?php
+// src/Exporter/ProductExporter.php
+
+namespace App\Exporter;
+
+use DPX\ExporterBundle\Manager\ExporterManager;
+
+class ProductExporter extends ExporterHelper
+{
+    /**
+     * @var ExporterManager
+     */
+    private $exporterManager;
+    
+    public function __construct(ExporterManager $exporterManager)
+    {
+        $this->exporterManager = $exporterManager;
+    }
+     
+    /**
+     * @return array
+     */
+    public function getHeaders(): array
+    {
+        $isDiscount = $this->exporterManager->getRequest()->get('discount') === 'true';
+        return [
+            'ID',
+            'Product',
+            'Barcode',
+            $isDiscount ? 'Discount' : 'Price'
+        ];
+    }
 }
 ```
 

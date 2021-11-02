@@ -16,9 +16,10 @@ class XlsxDriver extends DriverHelper
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
+        $headers = $exporter->getHeaders();
 
-        if (count($exporter->headers)) {
-            array_unshift($data, $exporter->headers);
+        if (count($headers)) {
+            array_unshift($data, $headers);
         }
 
         $sheet->fromArray(array_values($data), null, 'A1', true);
@@ -27,14 +28,14 @@ class XlsxDriver extends DriverHelper
         $cellIterator = $sheet->getRowIterator()->current()->getCellIterator();
         $cellIterator->setIterateOnlyExistingCells(true);
         foreach ($cellIterator as $cell) {
-            if (count($exporter->headers)) {
+            if (count($headers)) {
                 $sheet->getCell($cell->getColumn() . '1')->getStyle()->getFont()->setBold(true);
             }
 
             $sheet->getColumnDimension($cell->getColumn())->setAutoSize(true);
         }
 
-        if (count($exporter->headers)) {
+        if (count($headers)) {
             // Filter
             $sheet->setAutoFilter($spreadsheet->getActiveSheet()
                 ->calculateWorksheetDimension());

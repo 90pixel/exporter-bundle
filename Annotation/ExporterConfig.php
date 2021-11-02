@@ -35,10 +35,15 @@ final class ExporterConfig
      */
     public $driver;
 
+    /**
+     * @var array
+     */
+    public $headers = [];
+
     public function __construct()
     {
         $this->driver = $this->driver ?? DriverConstant::XLSX;
         $this->filename = $this->driver === DriverConstant::XLSX ? 'export.xlsx' : 'export.pdf';
-        $this->templateName = '@Exporter/pdf/default.html.twig';
+        $this->templateName = '@Exporter/pdf/pdf.html.twig';
     }
 }

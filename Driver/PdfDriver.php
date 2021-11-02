@@ -29,7 +29,7 @@ class PdfDriver extends DriverHelper
         $config = $manager->getConfig();
 
         $htmlOutput = $this->twig->render($config->templateName, [
-            'headers' => $exporter->headers,
+            'headers' => $exporter->getHeaders(),
             'results' => $data
         ]);
 
