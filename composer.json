@@ -1,7 +1,9 @@
 {
     "name": "90pixel/exporter-bundle",
-    "description": "Exporter Bundle",
+    "description": "You can easily export your data to pdf or excel or any format.",
     "type": "library",
+    "keywords": ["Symfony", "bundle", "export", "pdf", "excel", "api"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Muhep Atasoy",
