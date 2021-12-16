@@ -8,7 +8,6 @@
             "email": "muhepatasoy06@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "symfony/framework-bundle": "^5.0",
         "api-platform/api-pack": "^1.2",
