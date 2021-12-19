@@ -67,6 +67,15 @@ class ExporterDataProvider implements ContextAwareCollectionDataProviderInterfac
         $exporter->builder($queryBuilder, 'o');
         $results = $exporter->getResult($queryBuilder);
 
+        if (method_exists($exporter, 'row')) {
+            $controllerResult = [];
+            foreach ($results as $result) {
+                $controllerResult[] = $exporter->row($result);
+            }
+
+            return $controllerResult;
+        }
+
         return $this->serializer->normalize($results, null, $context);
     }
 
