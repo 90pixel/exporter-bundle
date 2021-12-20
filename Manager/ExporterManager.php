@@ -44,7 +44,7 @@ class ExporterManager
     /**
      * @return string
      */
-    public function getResourceClass(): string
+    public function getResourceClass(): ?string
     {
         return $this->getRequest()->attributes->get('_api_resource_class');
     }
@@ -52,7 +52,7 @@ class ExporterManager
     /**
      * @return string
      */
-    public function getOperationName(): string
+    public function getOperationName(): ?string
     {
         return $this->getRequest()->attributes->get('_api_collection_operation_name');
     }
