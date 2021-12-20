@@ -8,8 +8,12 @@ use ReflectionClass;
 
 class ConfigReader
 {
-    public static function read(string $resourceClass, string $operationName): ?ExporterConfig
+    public static function read(?string $resourceClass, ?string $operationName): ?ExporterConfig
     {
+        if (is_null($resourceClass) || is_null($operationName)) {
+            return null;
+        }
+
         $reflectionClass = new ReflectionClass($resourceClass);
         $reader = new AnnotationReader();
         $annotations = $reader->getClassAnnotations($reflectionClass);
