@@ -30,6 +30,6 @@ class DriverHelper implements DriverInterface
 
     public function getFileName(): string
     {
-        return $this->getExporterManager()->getConfig()->filename;
+        return $this->getExporterManager()->getExporter()->getFilename();
     }
 }
