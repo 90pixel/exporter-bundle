@@ -9,7 +9,11 @@ use DPX\ExporterBundle\Manager\ExporterManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ExporterDataProvider implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
+/**
+ * @deprecated Data Providers not supported in API Platform 3.0 anymore.
+ * @link https://api-platform.com/docs/v3.1/core/upgrade-guide/#summary-of-the-changes-between-26-and-2730
+ */
+class ExporterDataProvider // implements ContextAwareCollectionDataProviderInterface, RestrictedDataProviderInterface
 {
     /**
      * @var EntityManagerInterface

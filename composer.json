@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "^5.0",
-        "api-platform/api-pack": "^1.2",
+        "symfony/framework-bundle": "^6.0",
+        "api-platform/core": "^3.0",
         "phpoffice/phpspreadsheet": "^1.18",
         "mpdf/mpdf": "v8.0.13"
     },
