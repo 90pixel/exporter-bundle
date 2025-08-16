@@ -2,7 +2,7 @@
 
 namespace DPX\ExporterBundle\Helper;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\FilterExtension;
+use ApiPlatform\Doctrine\Orm\Extension\FilterExtension;
 use DPX\ExporterBundle\Annotation\ExporterConfig;
 use DPX\ExporterBundle\Interfaces\ExporterInterface;
 use Doctrine\ORM\QueryBuilder;

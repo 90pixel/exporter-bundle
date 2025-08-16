@@ -8,10 +8,6 @@ services:
     resource: '../../*'
     exclude: '../{DependencyInjection,Entity,Migrations,Tests}'
 
-  DPX\ExporterBundle\DataProvider\ExporterDataProvider:
-    arguments:
-      $collectionExtensions: !tagged api_platform.doctrine.orm.query_extension.collection
-
   DPX\ExporterBundle\EventListener\KernelViewListener:
     tags:
       - { name: kernel.event_listener, event: kernel.view, method: onKernelView, priority: 17 }

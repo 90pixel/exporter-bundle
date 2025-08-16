@@ -7,29 +7,21 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 
 class KernelViewListener
 {
-    /**
-     * @var ExporterManager
-     */
-    private $exporterManager;
-
-    public function __construct(ExporterManager $exporterManager)
+    public function __construct(private readonly ExporterManager $exporterManager)
     {
-        $this->exporterManager = $exporterManager;
     }
 
-    public function onKernelView(ViewEvent $event)
+    public function onKernelView(ViewEvent $event): void
     {
+        $attributes = $event->getRequest()->attributes;
+        if (!$attributes->has('_dpx_exporter_operation')) {
+            return;
+        }
+
+        $config = $attributes->get('_dpx_exporter_operation');
+        $this->exporterManager->setOperation($config->operation);
+
         $controllerResult = $event->getControllerResult();
-        $config = $this->exporterManager->getConfig();
-        $operationName = $this->exporterManager->getOperationName();
-
-        if (!$config || !$operationName) {
-            return;
-        }
-
-        if ($config->operationName !== $operationName) {
-            return;
-        }
 
         $response = $this->exporterManager->getDriver()->handle($controllerResult);
         $event->setResponse($response);

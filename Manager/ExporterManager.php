@@ -2,6 +2,7 @@
 
 namespace DPX\ExporterBundle\Manager;
 
+use ApiPlatform\Metadata\Operation;
 use DPX\ExporterBundle\Annotation\ExporterConfig;
 use DPX\ExporterBundle\Helper\ExporterHelper;
 use DPX\ExporterBundle\Interfaces\DriverInterface;
@@ -13,24 +14,16 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ExporterManager
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var Request
-     */
-    private $request;
+    private ?Operation $operation = null;
 
     /**
      * @param ContainerInterface $container
-     * @param RequestStack $request
+     * @param RequestStack $requestStack
      */
-    public function __construct(ContainerInterface $container, RequestStack $request)
-    {
-        $this->container = $container;
-        $this->request = $request->getCurrentRequest();
+    public function __construct(
+        private readonly ContainerInterface $container,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     /**
@@ -38,23 +31,24 @@ class ExporterManager
      */
     public function getRequest(): Request
     {
-        return $this->request;
+        return $this->requestStack->getCurrentRequest();
     }
 
     /**
-     * @return string
+     * @param Operation $operation
+     * @return void
      */
-    public function getResourceClass(): ?string
+    public function setOperation(Operation $operation): void
     {
-        return $this->getRequest()->attributes->get('_api_resource_class');
+        $this->operation = $operation;
     }
 
     /**
-     * @return string
+     * @return Operation|null
      */
-    public function getOperationName(): ?string
+    public function getOperation(): ?Operation
     {
-        return $this->getRequest()->attributes->get('_api_collection_operation_name');
+        return $this->operation;
     }
 
     /**
@@ -62,7 +56,7 @@ class ExporterManager
      */
     public function getConfig(): ?ExporterConfig
     {
-        return ConfigReader::read($this->getResourceClass(), $this->getOperationName());
+        return ConfigReader::read($this->getOperation());
     }
 
     /**

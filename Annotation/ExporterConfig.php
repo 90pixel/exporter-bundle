@@ -2,6 +2,7 @@
 
 namespace DPX\ExporterBundle\Annotation;
 
+use ApiPlatform\Metadata\Operation;
 use DPX\ExporterBundle\Constant\DriverConstant;
 
 /**
@@ -14,6 +15,11 @@ final class ExporterConfig
      * @var string
      */
     public $operationName;
+
+    /**
+     * @var Operation|null
+     */
+    public ?Operation $operation;
 
     /**
      * @var string
@@ -44,6 +50,6 @@ final class ExporterConfig
     {
         $this->driver = $this->driver ?? DriverConstant::XLSX;
         $this->filename = $this->driver === DriverConstant::XLSX ? 'export.xlsx' : 'export.pdf';
-        $this->templateName = '@Exporter/pdf/pdf.html.twig';
+        $this->templateName = '@Exporter/pdf/default.html.twig';
     }
 }

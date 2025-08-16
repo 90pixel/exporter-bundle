@@ -2,28 +2,36 @@
 
 namespace DPX\ExporterBundle\Reader;
 
+use ApiPlatform\Metadata\Operation;
 use DPX\ExporterBundle\Annotation\ExporterConfig;
-use Doctrine\Common\Annotations\AnnotationReader;
-use ReflectionClass;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class ConfigReader
 {
-    public static function read(?string $resourceClass, ?string $operationName): ?ExporterConfig
+    public static function read(Operation $operation): ?ExporterConfig
     {
-        if (is_null($resourceClass) || is_null($operationName)) {
+        $options = $operation->getExtraProperties();
+        if (!isset($options['exporter_config'])) {
             return null;
         }
 
-        $reflectionClass = new ReflectionClass($resourceClass);
-        $reader = new AnnotationReader();
-        $annotations = $reader->getClassAnnotations($reflectionClass);
+        $exporterConfig = $options['exporter_config'];
+        $exporterConfig['operation'] = $operation;
 
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof ExporterConfig && $annotation->operationName === $operationName) {
-                return $annotation;
+        return self::populate($exporterConfig);
+    }
+
+    private static function populate(array $exporterConfig): ExporterConfig
+    {
+        $accessor = PropertyAccess::createPropertyAccessor();
+        $config = new ExporterConfig();
+
+        foreach ($exporterConfig as $key => $value) {
+            if ($accessor->isWritable($config, $key)) {
+                $accessor->setValue($config, $key, $value);
             }
         }
 
-        return null;
+        return $config;
     }
 }
