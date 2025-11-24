@@ -41,7 +41,8 @@ class XlsxDriver extends DriverHelper
                 ->calculateWorksheetDimension());
         }
 
-        $writer = new Xlsx($spreadsheet);
+        $instance = $exporter->instance($spreadsheet);
+        $writer = new Xlsx($instance);
 
         $response =  new StreamedResponse(function () use ($writer) {
                 $writer->save('php://output');

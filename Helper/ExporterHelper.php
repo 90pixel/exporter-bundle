@@ -74,4 +74,17 @@ class ExporterHelper implements ExporterInterface
     {
         $this->config = $config;
     }
+
+    /**
+     * @return ExporterConfig
+     */
+    public function getConfig(): ExporterConfig
+    {
+        return $this->config;
+    }
+
+    public function instance($instance)
+    {
+        return $instance;
+    }
 }
